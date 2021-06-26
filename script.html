@@ -1,0 +1,508 @@
+<script>
+	$(document).ready(function() {
+    
+    $('.changeItem').change(function(){
+        $('#generate').click();
+    });
+
+    $(document).keypress(function (e) {
+        var key = e.which;
+         if(key == 13)  // the enter key code
+         {
+            $('#generate').click();
+             return false;  
+          }
+    });
+    
+    $('#video-button').hide();
+    $("#answerplot").hide();
+    
+    var testing = false;
+    $('#generate').click(function(){
+        if(!testing){$("#answer").hide(); $("#show-answer").val("Show Answer");}
+        $('#plot').hide();
+        $("#answerplot").hide();
+        $('#plot').empty();
+        $("#answerplot").empty();
+
+        var type;
+        // handles the formatting for selecting any type
+        if($("#type").val()=="any"){type = random(1,3);}
+        else{type = parseInt($("#type").val())}
+
+        generate(type);       
+     });
+
+
+    $("#show-answer").click(function(){
+       if($("#answer").is(":hidden") ){
+          $('#plot').hide();
+          $("#answer").show();
+          $("#answerplot").show();
+          $("#show-answer").val("Hide Answer");
+       } else{
+         $('#plot').show();
+         $("#answer").hide();
+         $("#answerplot").hide();
+         $("#show-answer").val("Show Answer");
+        }
+    });
+    
+    if(testing){ $("#answer").show();}
+    
+	});
+	function generate(type){
+       
+       var videoLinks = ["https://www.youtube.com/watch?v=is9RuqcCb3Q",
+                         "https://www.youtube.com/watch?v=Ij-e-AQ9wf8",
+                         "https://www.youtube.com/watch?v=cf4pXPLyeuk"];
+       
+       if(videoLinks[type-1].length != 0){ 
+         $("#videoLink"). attr("href", videoLinks[type-1]);
+         $('#video-button').show();
+       }
+       else{
+         $('#video-button').hide();
+       }
+       
+       
+       var problem = "";
+       var answer = "";
+       var a,b,c,d,e,f,g,h,sf;
+       var quad = getQuad(); // use the same generated quadratic for all cases
+       
+       var beg = "";
+       // use either notation for the beginning of the function
+       switch(random(0,1)){         
+         case 0: beg = "y = "; break
+         case 1: beg = "f(x) = "; break;        
+       }
+
+       $("#generated").html("");
+       $("#answer").html("");
+        
+       problem = "Find the vertex, axis of symmetry, roots, and increasing and decreasing intervals of this function:<br>";
+       
+       switch(type) {
+           // Given equation, describe the quadratic
+           case 1:  
+           
+           switch(random(0,1)){
+              
+              case 0: 
+                 problem += "\\("+simplifyExpression(beg+quad.a+"x^2+"+quad.b+"x+"+quad.c)+"\\)";
+                 answer += "Vertex Form: \\("+doublesigns(beg+quad.a+"(x - "+quad.vertexX+")^2 +"+quad.vertexY)+"\\)<br>";
+              break;
+              
+              case 1: 
+                 problem += "\\("+doublesigns(beg+quad.a+"(x - "+quad.vertexX+")^2 +"+quad.vertexY)+"\\)"; 
+                 answer += "Standard Form: \\("+simplifyExpression(beg+quad.a+"x^2+"+quad.b+"x+"+quad.c)+"\\)<br>";
+              break;
+           
+           }
+                     
+           break;
+           
+           // Given table, describe the quadratic
+           case 2:  
+           var xstring = ""; 
+           var ystring = "";           
+           problem += "<table border='1'>";
+           problem += "<tr><td>\\(x\\)</td>";          
+          
+           var tableAdj = random(1,3);
+           var inc = 1;
+           if(!Number.isInteger(quad.vertexX)){
+              
+              inc = 0.5;
+              
+           }
+     
+           // makes the table tableAdj before the smaller root and tableAdj after the larger root
+           for(var i = Math.min(quad.r1,quad.r2)-tableAdj; i < Math.max(quad.r1,quad.r2)+tableAdj; i=i+inc){
+              
+              xstring += "<td>"+(i)+"</td>";
+              ystring += "<td>"+(quadEval(quad.a,quad.b,quad.c,i))+"</td>";
+
+           }
+           
+           problem += xstring+"</tr><tr><td>\\(y\\)</td>"+ystring+"</tr>";
+           problem += "</table>";
+           
+           break;
+           
+           case 3:  
+           var exp = quad.a+"x^2 +"+quad.b+"x+"+quad.c; 
+           draw(exp,'plot',null,null,null,null,null);
+           $('#plot').show();                           
+           draw(exp,'answerplot',quad.a,quad.vertexX,quad.vertexY,quad.r1,quad.r2);    
+           break;
+           
+       }
+       
+       // Format the rest of the answer for all cases
+       answer += "Vertex: \\(("+quad.vertexX+", "+quad.vertexY+")\\)<br>";
+       answer += "Axis of symmetry: \\(x = "+quad.vertexX+"\\)<br>";
+       answer += "Roots: \\(\\{"+quad.r1+","+quad.r2+"\\}\\)";  
+       // increasing and decreasing intervals
+       var inc = quad.vertexX+", \\infty"; 
+       var dec  = "-\\infty , "+quad.vertexX;
+       // switch if a is negative
+       if(quad.a < 0){              
+           dec = quad.vertexX+", \\infty"; 
+           inc  = "-\\infty, "+quad.vertexX;        
+        }
+        answer += "<br>Increasing: \\(("+inc+")\\), Decreasing: \\(("+dec+")\\)<br>";  
+        
+       $("#generated").html(doublesigns(problem));
+       $("#answer").html(doublesigns(answer));
+        renderMathInElement(document.body);
+       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"generated"]);
+       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"answer"]);
+	}
+    
+    // helper function for graphing to produce a quadratic function with viable roots and a vertex within 10 by 10
+    function getQuad(){
+       var found = false;
+       var root1, root2, a, b, c, vertexX, vertexY;
+
+       // find roots and a value of a that produces a vertex y-coord within -5 and 5
+       do{
+           
+          // create the roots
+          root1 = random(-9,9);
+          do{root2 = random(-9,9);} while (root1 == root2); // unique roots always      
+          vertexX = (root1+root2)/2;
+           
+           a = non_zero_random(-5,5);
+           // a(x - root1)(x - root2)
+           // a(x^2 - (root1+root2)x + root1*root2
+           // ax^2 - a(root1+root2)x + a*root1*root2
+           
+           b = -1*a*(root1+root2);
+           c = a*root1*root2;
+           
+           vertexY = Math.round((a*(vertexX**2)+b*vertexX+c)*10000)/10000;
+           
+           if(vertexY > -10 && vertexY < 10){
+              
+              found = true;
+              
+           }
+           
+       }
+       while(!found);
+       
+       return {r1:Math.min(root1,root2), r2:Math.max(root1,root2), a:a, b:b, c:c, vertexX:vertexX, vertexY:vertexY};
+    }    
+    
+    // helper function to evaluate values of a quadratic of the form ax^2+bx+c at the value of x and avoid floating point errors (rounding used)
+    function quadEval(a, b, c, x){
+    
+       return (Math.round((a*((x)**2)+(b*x)+c)*1000000)/1000000).toString();
+    
+    }
+    
+    // function that draws the graph between -10 and 10
+    function draw(expression, location, a, vertexX,vertexY,r1,r2) {
+    try {
+      // compile the expression once
+      var expr = math.compile(expression)
+
+      // evaluate the expression repeatedly for different values of x
+      var xValues = math.range(-11, 11, 0.1).toArray();
+      
+      // need to round these because of number types.  The values in the array weren't the exact decimals needed
+      for (var i = 0; i < xValues.length; i ++){         
+         xValues[i] = Math.round(xValues[i]*100)/100;         
+      }
+      
+      const yValues = xValues.map(function (x) {
+        return expr.eval({x: x});
+      })
+      
+      var xValues2 = [];
+      var yValues2 = []
+      for(var i = 0; i < xValues.length; i ++){         
+         var yvalue = expr.eval({x: xValues[i]});
+
+            // creates the "pretty points" to graph points at integer y-values
+            if(Number.isInteger(yvalue) && Number.isInteger(xValues[i])){        
+               xValues2.push(xValues[i]);
+               yValues2.push(yvalue);        
+            }          
+      }     
+      
+       
+      // render the line using plotly
+      var trace1 = {
+        x: xValues,
+        y: yValues,
+        type: 'scatter',
+        mode: 'lines',        
+        line: {
+          color: '#3F4591',
+          width: 2
+        },
+        name:"",
+      };
+      
+      // render the "pretty points" using plotly
+      var trace2 = {
+        x: xValues2,
+        y: yValues2,
+        type: 'scatter',
+        mode: 'markers',
+        marker: {
+          color: '#3F4591',
+          size: 8
+        },
+        hoverinfo:'none'
+      };
+      
+      var data = [trace1,trace2]; // add the quadratic and dots to the graph
+      
+      var axis_template ={
+        showgrid: true,
+        zeroline: true,
+        nticks: 23,
+        range: [-11,11], 
+        gridcolor: '#bdbdbd', //grid color
+        gridwidth: 1.2, //grid width
+        zerolinecolor: 'black', // axes color
+        zerolinewidth: 1.5, // axes widths
+        showticklabels:false
+      };        
+      
+      // make grid smaller for mobile
+      var gridsize;
+      var indent;
+      // gridsize= Math.min(.95*window.innerWidth,550);
+      
+      if(window.innerWidth > 601){
+         gridsize = 550;
+         indent = 20;
+      }else{
+         gridsize = 350;
+         indent = 0;
+      }
+      
+      var xTickMarkLabels =   {
+        x: [-10.1,-9.1,-8.1,-7.1,-6.1,-5.1,-4.1,-3.1,-2.1,-1.1,0,1,2,3,4,5,6,7,8,9,10],
+        y: [-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1],
+        mode: 'text',
+        text:[-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10],
+        textposition:"bottom",
+        textfont: {
+          size:13,
+        },
+        hoverinfo:'none'
+      };   
+      
+      var yTickMarkLabels =   {
+        y: [-10.1,-9.1,-8.1,-7.1,-6.1,-5.1,-4.1,-3.1,-2.1,-1.1,0,1,2,3,4,5,6,7,8,9,10],
+        x: [-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1],
+        mode: 'text',
+        text:[-10,-9,-8,-7,-6,-5,-4,-3,-2,-1,0,1,2,3,4,5,6,7,8,9,10],
+        textposition:"left",
+        textfont: {
+          size:13,
+        },
+        hoverinfo:'none'
+      };
+      
+      var layout = {
+        xaxis:axis_template,
+        yaxis:axis_template,
+        showlegend: false,
+        width: gridsize,
+        height: gridsize,
+        hovermode: 'closest',   
+        font:{size: 18},
+        margin: {l: indent,  r: 30, t: 20}       
+      };     
+      
+      layout.annotations= [
+      {
+         x: 0,
+         y: 11,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: 0,
+         ay: 35
+       },
+       {
+         x: 0,
+         y: -11,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: 0,
+         ay: -35
+       },
+       {
+         x: 11,
+         y: 0,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: -35,
+         ay: 0
+       },
+       {
+         x: -11,
+         y: 0,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: 35,
+         ay: 0
+       }
+
+     ];
+      
+      if(vertexX !== null){
+      
+      // graphing the axis of symmetry
+      var trace3 = { 
+        x: [vertexX,vertexX,vertexX],
+        y: [-11,Math.sign(a)*5,11],
+        type: 'scatter',
+        mode: 'lines+text',
+        marker: {
+          color: '#129649',
+          size: 8
+        },
+        line: {
+        dash: 'dash',
+        width: 2
+        },
+        text: ['','x = '+vertexX,''],
+        hoverinfo:'none' 
+      }
+      
+      data.push(trace3);
+      
+      // labeling the roots as a different colored dot
+      var trace4 = {
+        x: [r1,r2],
+        y: [0,0],
+        type: 'scatter',
+        mode: 'markers',
+        marker: {
+          color: '#129649',
+          size: 8
+        },
+        textposition: 'bottom',
+        hoverinfo:'none' 
+      }
+      
+      data.push(trace4);
+      
+      layout.annotations= [
+      {
+         x: 0,
+         y: 11,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: 0,
+         ay: 35
+       },
+       {
+         x: 0,
+         y: -11,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: 0,
+         ay: -35
+       },
+       {
+         x: 11,
+         y: 0,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: -35,
+         ay: 0
+       },
+       {
+         x: -11,
+         y: 0,
+         showarrow: true,
+         arrowsize:2,
+         arrowwidth:1,
+         arrowhead:3,
+         ax: 35,
+         ay: 0
+       },
+      {
+         x: r1,
+         y: 0,
+         xref: 'x',
+         yref: 'y',
+         text: 'Root',
+         showarrow: true,
+         arrowhead: 1,
+         ax: -40,
+         ay: -15
+       },
+       {
+         x: r2,
+         y: 0,
+         xref: 'x',
+         yref: 'y',
+         text: 'Root',
+         showarrow: true,
+         arrowhead: 1,
+         ax: 40,
+         ay: -15
+       },
+
+     {
+         x: vertexX,
+         y: vertexY,
+         xref: 'x',
+         yref: 'y',
+         text: 'Vertex',
+         showarrow: true,
+         arrowhead:1,
+         ax: 0,
+         ay: (30*Math.sign(a))
+       }
+     ];
+      
+      }
+      data.push(xTickMarkLabels,yTickMarkLabels);
+      Plotly.newPlot(location, data, layout,{displayModeBar: false});
+    }
+    catch (err) {
+      console.error(err)
+      alert(err)
+    }
+  }
+  /* Auto resize grid function.  Don't think this is necessary currently */
+  /*
+  window.onresize = function() {
+  var gridsize = Math.min(.95*window.innerWidth,550);
+  Plotly.relayout(plot, {
+    width: gridsize,
+    height: gridsize
+  });
+  
+  Plotly.relayout(answerplot, {
+    width: gridsize,
+    height: gridsize
+  });
+} 
+*/
+</script>
