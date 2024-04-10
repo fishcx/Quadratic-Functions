@@ -27,7 +27,7 @@
 
         var type;
         // handles the formatting for selecting any type
-        if($("#type").val()=="any"){type = random(1,3);}
+        if($("#type").val()=="any"){type = random(1,4);}
         else{type = parseInt($("#type").val())}
 
         generate(type);       
@@ -55,7 +55,8 @@
        
        var videoLinks = ["https://www.youtube.com/watch?v=is9RuqcCb3Q",
                          "https://www.youtube.com/watch?v=Ij-e-AQ9wf8",
-                         "https://www.youtube.com/watch?v=cf4pXPLyeuk"];
+                         "https://www.youtube.com/watch?v=cf4pXPLyeuk",
+                         ""];
        
        if(videoLinks[type-1].length != 0){ 
          $("#videoLink"). attr("href", videoLinks[type-1]);
@@ -82,7 +83,15 @@
        $("#answer").html("");
         
        problem = "Find the vertex, axis of symmetry, roots, and increasing and decreasing intervals of this function:<br>";
-       
+       var sf = random(-6,-1);
+       do{
+             var negativeRoot = random(-9,-1);
+          do {var positiveRoot = random(2,12); } while(negativeRoot == -1*positiveRoot);
+        } while(Math.abs(negativeRoot) > Math.abs(positiveRoot));
+        var b = -1*(negativeRoot+positiveRoot)*sf;
+        var c = negativeRoot*positiveRoot*sf;
+        var xVal = formatDec((negativeRoot+positiveRoot)/2);
+
        switch(type) {
            // Given equation, describe the quadratic
            case 1:  
@@ -131,34 +140,78 @@
            
            break;
            
+            // Given graph, describe the quadratic
            case 3:  
            var exp = quad.a+"x^2 +"+quad.b+"x+"+quad.c; 
            draw(exp,'plot',null,null,null,null,null);
            $('#plot').show();                           
            draw(exp,'answerplot',quad.a,quad.vertexX,quad.vertexY,quad.r1,quad.r2);    
            break;
+
+           // application problems
+           case 4:
+           
+           switch(random(0,5)){
+              
+              // rectangle area
+              case 0: case 1: case 2:
+              var width = random(11,20);
+              var change = random(10,90);
+              var length = width+change;
+              var units = ["ft", "cm", "m"];
+              var unit = units[random(0,2)];
+
+              var area = width*length;
+              problem = "The length of a rectangle is "+change+" more than its width and its area is "+area+" square "+unit+". Determine the dimensions of the rectangle.";
+              answer = "Width: "+width+" "+unit+", Length: "+length+" "+unit;
+              break;
+
+              // throwing a baseball - hits the ground
+              case 3:
+              problem = "The height of a thrown baseball is modeled by the function \\( h(t) = "+sf+"t^2 +"+b+"t+"+c+"\\). Determine when the ball will hit the ground.";
+              answer = "\\(t = "+positiveRoot+"\\) (omit \\(t = "+negativeRoot+"\\))";
+              break;
+
+              // throwing a baseball - determine when it reaches the maximum height
+              case 4:     
+              problem = "The height of a thrown baseball is modeled by the function \\( h(t) = "+sf+"t^2 +"+b+"t+"+c+"\\). Determine when the ball will reach its heighest point.";
+              answer = "\\(t = "+xVal+"\\)";
+              break;
+
+              // throwing a baseball - determine the maximum height
+              case 5:
+              var maxHeight = formatDec(sf*xVal*xVal+b*xVal+c);     
+              problem = "The height of a thrown baseball is modeled by the function \\( h(t) = "+sf+"t^2 +"+b+"t+"+c+"\\). Determine the maximum height of the ball.";
+              answer = "\\("+maxHeight+"\\)";
+              break;
+
+           }
+
+
+           break;
            
        }
        
-       // Format the rest of the answer for all cases
-       answer += "Vertex: \\(("+quad.vertexX+", "+quad.vertexY+")\\)<br>";
-       answer += "Axis of symmetry: \\(x = "+quad.vertexX+"\\)<br>";
-       answer += "Roots: \\(\\{"+quad.r1+","+quad.r2+"\\}\\)";  
-       // increasing and decreasing intervals
-       var inc = quad.vertexX+", \\infty"; 
-       var dec  = "-\\infty , "+quad.vertexX;
-       // switch if a is negative
-       if(quad.a < 0){              
-           dec = quad.vertexX+", \\infty"; 
-           inc  = "-\\infty, "+quad.vertexX;        
-        }
-        answer += "<br>Increasing: \\(("+inc+")\\), Decreasing: \\(("+dec+")\\)<br>";  
-        
+       if(type != 4){
+        // Format the rest of the answer for all cases
+        answer += "Vertex: \\(("+quad.vertexX+", "+quad.vertexY+")\\)<br>";
+        answer += "Axis of symmetry: \\(x = "+quad.vertexX+"\\)<br>";
+        answer += "Roots: \\(\\{"+quad.r1+","+quad.r2+"\\}\\)";  
+        // increasing and decreasing intervals
+        var inc = quad.vertexX+", \\infty"; 
+        var dec  = "-\\infty , "+quad.vertexX;
+        // switch if a is negative
+        if(quad.a < 0){              
+             dec = quad.vertexX+", \\infty"; 
+            inc  = "-\\infty, "+quad.vertexX;        
+          }
+          answer += "<br>Increasing: \\(("+inc+")\\), Decreasing: \\(("+dec+")\\)<br>";  
+       }
+
        $("#generated").html(doublesigns(problem));
        $("#answer").html(doublesigns(answer));
-        renderMathInElement(document.body);
-       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"generated"]);
-       //MathJax.Hub.queue.Push(["Typeset",MathJax.Hub,"answer"]);
+
+      renderMathInElement(document.body);
 	}
     
     // helper function for graphing to produce a quadratic function with viable roots and a vertex within 10 by 10
