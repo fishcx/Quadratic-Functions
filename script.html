@@ -27,7 +27,7 @@
 
         var type;
         // handles the formatting for selecting any type
-        if($("#type").val()=="any"){type = random(1,4);}
+        if($("#type").val()=="any"){type = random(1,5);}
         else{type = parseInt($("#type").val())}
 
         generate(type);       
@@ -56,6 +56,7 @@
        var videoLinks = ["https://www.youtube.com/watch?v=is9RuqcCb3Q",
                          "https://www.youtube.com/watch?v=Ij-e-AQ9wf8",
                          "https://www.youtube.com/watch?v=cf4pXPLyeuk",
+                         "https://www.youtube.com/watch?v=ljruH3AhzfI",
                          "https://www.youtube.com/watch?v=wE2rwHvZBu8"];
        
        if(videoLinks[type-1].length != 0){ 
@@ -82,7 +83,6 @@
        $("#generated").html("");
        $("#answer").html("");
         
-       problem = "Find the vertex, axis of symmetry, roots, and increasing and decreasing intervals of this function:<br>";
        var sf = random(-6,-1);
        do{
              var negativeRoot = random(-9,-1);
@@ -95,7 +95,8 @@
        switch(type) {
            // Given equation, describe the quadratic
            case 1:  
-           
+           problem = "Find the vertex, axis of symmetry, roots, and increasing and decreasing intervals of this function:<br>";
+       
            switch(random(0,1)){
               
               case 0: 
@@ -113,7 +114,9 @@
            break;
            
            // Given table, describe the quadratic
-           case 2:  
+           case 2:
+           problem = "Find the vertex, axis of symmetry, roots, and increasing and decreasing intervals of this function:<br>";
+         
            var xstring = ""; 
            var ystring = "";           
            problem += "<table border='1'>";
@@ -142,14 +145,24 @@
            
             // Given graph, describe the quadratic
            case 3:  
+           problem = "Find the vertex, axis of symmetry, roots, and increasing and decreasing intervals of this function:<br>";
+       
            var exp = quad.a+"x^2 +"+quad.b+"x+"+quad.c; 
            draw(exp,'plot',null,null,null,null,null);
            $('#plot').show();                           
            draw(exp,'answerplot',quad.a,quad.vertexX,quad.vertexY,quad.r1,quad.r2);    
            break;
 
-           // application problems
+           // Simplifying Radicals
            case 4:
+           var square = Math.pow(random(3,10),2);
+           var num = random(3,10)*square;
+           problem = "Simplify \\(\\sqrt{"+num+"}\\)";
+           answer = "\\("+simplifyRad(num)+"\\)";
+           break;
+
+           // application problems
+           case 5:
            
            switch(random(0,5)){
               
@@ -214,6 +227,55 @@
       renderMathInElement(document.body);
 	}
     
+   // JavaScript program to find if x is a
+// perfect square.
+ 
+function isPerfectSquare(x)
+    {
+        return x > 0 && Math.sqrt(x) % 1 === 0;
+    }
+
+    // simplify radical
+    function simplifyRad(radicand){
+
+          if(isPerfectSquare(Math.abs(radicand))){
+            var square = Math.sqrt(Math.abs(radicand));
+            if(radicand < 0 ){
+              return square+"i";
+            }
+            else{
+              return square;
+            }
+
+          }
+
+           var isqr = Math.floor(Math.sqrt(Math.abs(radicand)));
+           var isqr2 = isqr**2;
+           var front = "";
+           var inside = radicand;
+           
+           while(isqr2 > 1){
+           
+             if((inside % isqr2) === 0){
+
+                front = isqr;
+                inside = inside/isqr2;
+                
+                break;
+             }
+             
+             isqr--;
+             isqr2 = isqr**2;
+           
+           }
+    
+       if(radicand < 0){
+         return front+"\\sqrt{"+(-inside)+"}i";
+       } else{
+         return front+"\\sqrt{"+inside+"}";
+       }
+    }
+
     // helper function for graphing to produce a quadratic function with viable roots and a vertex within 10 by 10
     function getQuad(){
        var found = false;
