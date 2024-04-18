@@ -101,7 +101,7 @@
               
               case 0: 
                  problem += "\\("+simplifyExpression(beg+quad.a+"x^2+"+quad.b+"x+"+quad.c)+"\\)";
-                 answer += "Vertex Form: \\("+doublesigns(beg+quad.a+"(x - "+quad.vertexX+")^2 +"+quad.vertexY)+"\\)<br>";
+                 //answer += "Vertex Form: \\("+doublesigns(beg+quad.a+"(x - "+quad.vertexX+")^2 +"+quad.vertexY)+"\\)<br>";
               break;
               
               case 1: 
@@ -205,7 +205,7 @@
            
        }
        
-       if(type != 4){
+       if(type < 4){
         // Format the rest of the answer for all cases
         answer += "Vertex: \\(("+quad.vertexX+", "+quad.vertexY+")\\)<br>";
         answer += "Axis of symmetry: \\(x = "+quad.vertexX+"\\)<br>";
