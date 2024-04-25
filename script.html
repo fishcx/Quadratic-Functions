@@ -164,10 +164,10 @@
            // application problems
            case 5:
            
-           switch(random(0,5)){
+           switch(random(0,6)){
               
-              // rectangle area
-              case 0: case 1: case 2:
+              // rectangle area - length in terms of width
+              case 0: case 1: 
               var width = random(11,20);
               var change = random(10,90);
               var length = width+change;
@@ -179,20 +179,33 @@
               answer = "Width: "+width+" "+unit+", Length: "+length+" "+unit;
               break;
 
+              // rectangle area - width in terms of length
+              case 2: case 3:
+              var width = random(11,20);
+              var change = random(10,90);
+              var length = width+change;
+              var units = ["ft", "cm", "m"];
+              var unit = units[random(0,2)];
+
+              var area = width*length;
+              problem = "The width of a rectangle is "+change+" less than its length and its area is "+area+" square "+unit+". Determine the dimensions of the rectangle.";
+              answer = "Width: "+width+" "+unit+", Length: "+length+" "+unit;
+              break;
+
               // throwing a baseball - hits the ground
-              case 3:
+              case 4:
               problem = "The height of a thrown baseball is modeled by the function \\( h(t) = "+sf+"t^2 +"+b+"t+"+c+"\\). Determine when the ball will hit the ground.";
               answer = "\\(t = "+positiveRoot+"\\) (omit \\(t = "+negativeRoot+"\\))";
               break;
 
               // throwing a baseball - determine when it reaches the maximum height
-              case 4:     
+              case 5:     
               problem = "The height of a thrown baseball is modeled by the function \\( h(t) = "+sf+"t^2 +"+b+"t+"+c+"\\). Determine when the ball will reach its heighest point.";
               answer = "\\(t = "+xVal+"\\)";
               break;
 
               // throwing a baseball - determine the maximum height
-              case 5:
+              case 6:
               var maxHeight = formatDec(sf*xVal*xVal+b*xVal+c);     
               problem = "The height of a thrown baseball is modeled by the function \\( h(t) = "+sf+"t^2 +"+b+"t+"+c+"\\). Determine the maximum height of the ball.";
               answer = "\\("+maxHeight+"\\)";
