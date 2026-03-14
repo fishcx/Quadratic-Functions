@@ -194,8 +194,9 @@
               var unit = units[random(0,2)];
 
               var area = width*length;
-              problem = "The length of a rectangle is "+change+" more than its width and its area is "+area+" square "+unit+". Determine the dimensions of the rectangle.";
-              answer = "Width: "+width+" "+unit+", Length: "+length+" "+unit;
+              problem = "The length of a rectangle is "+change+" more than its width and its area is "+area+" square "+unit+". Write and solve a quadratic equation to determine the dimensions of the rectangle.";
+              answer = `\\(w(w+${change}) = ${area}\\)`;
+              answer += "<br>Width: "+width+" "+unit+", Length: "+length+" "+unit;
               break;
 
               // rectangle area - width in terms of length
@@ -207,8 +208,9 @@
               var unit = units[random(0,2)];
 
               var area = width*length;
-              problem = "The width of a rectangle is "+change+" less than its length and its area is "+area+" square "+unit+". Determine the dimensions of the rectangle.";
-              answer = "Width: "+width+" "+unit+", Length: "+length+" "+unit;
+              problem = "The width of a rectangle is "+change+" less than its length and its area is "+area+" square "+unit+". Write and solve a quadratic equation to determine the dimensions of the rectangle.";
+              answer = `\\(L(L-${change}) = ${area}\\)`;
+              answer += "<br>Width: "+width+" "+unit+", Length: "+length+" "+unit;
               break;
 
               // throwing a baseball - hits the ground
