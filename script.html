@@ -110,6 +110,8 @@
               break;
            
            }
+           var exp = quad.a+"x^2 +"+quad.b+"x+"+quad.c; 
+           draw(exp,'answerplot',quad.a,quad.vertexX,quad.vertexY,quad.r1,quad.r2);    
                      
            break;
            
@@ -140,6 +142,8 @@
            
            problem += xstring+"</tr><tr><td>\\(y\\)</td>"+ystring+"</tr>";
            problem += "</table>";
+           var exp = quad.a+"x^2 +"+quad.b+"x+"+quad.c; 
+           draw(exp,'answerplot',quad.a,quad.vertexX,quad.vertexY,quad.r1,quad.r2);  
            
            break;
            
