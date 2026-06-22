@@ -85,6 +85,12 @@
 	function random(min, max) {
          return Math.floor(Math.random() * (max - min + 1) ) + min;
     } 
+
+    // removes all double signs
+    function clean(string){
+
+       return string.replaceAll("-+", "-").replaceAll("- +", "-").replaceAll("+ -", "-").replaceAll("- -", "+").replaceAll("+-", "-").replaceAll("-- ", "+");
+    }
     
     // random non-zero integer bewteen min and max
     function non_zero_random(min, max) {

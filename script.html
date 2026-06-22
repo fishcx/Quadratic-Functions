@@ -57,7 +57,8 @@
                          "https://www.youtube.com/watch?v=Ij-e-AQ9wf8",
                          "https://www.youtube.com/watch?v=cf4pXPLyeuk",
                          "https://www.youtube.com/watch?v=ljruH3AhzfI",
-                         "https://www.youtube.com/watch?v=wE2rwHvZBu8"];
+                         "https://www.youtube.com/watch?v=wE2rwHvZBu8",
+                         ""];
        
        if(videoLinks[type-1].length != 0){ 
          $("#videoLink"). attr("href", videoLinks[type-1]);
@@ -236,6 +237,36 @@
 
 
            break;
+
+           // Quad linear Systems
+           case 6:
+
+              var x1 = random(-10,10); 
+              var x2 = random(-10,10); 
+              
+              var linTerm = -1*(x1+x2);
+              var consT = x1*x2;
+
+              var changeLinTerm = non_zero_random(-10,10);
+              var changeConst = non_zero_random(-10,10);
+
+              var quad = formatQuad(1,linTerm+changeLinTerm,consT+changeConst);
+              var line = formatLin(changeLinTerm,changeConst);
+
+              var y1 = formatDec(changeLinTerm*x1+changeConst);
+              var y2 = formatDec(changeLinTerm*x2+changeConst);
+
+              problem = `Solve the system algebraically for all values of \\(x\\) and \\(y\\).<br>`;
+              problem += `\\(${clean(quad)}\\)<br>`;
+              problem += `\\(${clean(line)}\\)`;
+              
+              if(x1 != x2){
+                answer = `\\((${x1},${y1})\\) and \\((${x2},${y2})\\)`; 
+              }
+              else{
+                answer = `\\((${x1},${y1})\\)`;
+              }
+           break;
            
        }
        
@@ -261,6 +292,24 @@
       renderMathInElement(document.body);
 	}
     
+function formatQuad(a,b,c){
+
+  var output = `y = x^2`;
+  if(b != 0){ output += `+ ${b}x`; }
+  if(c != 0){ output += `+ ${c}`; }
+
+  return output;
+}
+
+function formatLin(m,b){
+
+  var output = `y = `;
+  if(m != 0 && b != 0){ output += `${m}x + ${b}`; }
+  else if(m == 0){ output += `${b}`}
+  else{ output += `${m}x`; }
+  return output;
+}
+
    // JavaScript program to find if x is a
 // perfect square.
  
